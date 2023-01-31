@@ -1,6 +1,5 @@
 import './App.css';
 import SoundCloud from './soundcloud.js';
-import SoundCloud_Logo from "./Soundcloud-logo.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './components/nav/navbar.js'
 function App() {
