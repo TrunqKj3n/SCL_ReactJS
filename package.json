@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@atlaskit/button": "^16.5.3",
-    "@atlaskit/icon": "^21.11.4",
-    "@atlaskit/textfield": "^5.3.4",
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.10.5",
     "@fortawesome/fontawesome-free": "^6.2.1",
@@ -18,7 +15,6 @@
     "axios": "^1.2.6",
     "bootstrap": "^5.2.3",
     "cdbreact": "^1.5.4",
-    "js-file-downloader": "^1.1.24",
     "mdb-react-ui-kit": "^5.1.0",
     "moment": "^2.29.4",
     "react": "^18.2.0",
