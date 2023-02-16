@@ -1,7 +1,7 @@
 import './App.css';
 import SoundCloud from './soundcloud.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Header from './components/nav/navbar.js'
+import Header from './components/page/navbar.js'
 function App() {
   return (
     <>

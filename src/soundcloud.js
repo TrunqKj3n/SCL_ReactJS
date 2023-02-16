@@ -4,7 +4,10 @@ import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Alert, Box, Card, CardContent, CardMedia, Typography, TextField } from '@mui/material';
+import { Alert, Box, Card, CardContent, CardMedia, Typography, TextField, LinearProgress, InputAdornment, IconButton } from '@mui/material';
+import { Download, ContentPasteGo } from '@mui/icons-material';
+
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import moment from 'moment';
 const notify = (type, message) => {
     toast[type](message, {
@@ -21,12 +24,12 @@ const notify = (type, message) => {
 function download(url) {
     return new Promise((resolve, reject) => {
         if (!url.includes('soundcloud.com')) {
-            return notify('error', 'Đường dẫn không hợp lệ!'), reject('Đường dẫn không hợp lệ!');
+            return notify('error', 'Đường dẫn không hợp lệ!')
         }
         axios({
             url: `https://thieutrungkien.dev/soundcloud/track?url=${url}`,
             method: 'GET',
-            responseType: 'json'
+            responseType: 'json',
         }).then((response) => {
             console.log(response);
             const data = response.data;
@@ -56,6 +59,7 @@ const SoundCloud = () => {
     const [music, setMusic] = useState(null);
     const [error, setError] = useState(null);
     const [show, setShow] = useState(false);
+    const [loading, setLoading] = useState(0);
     const handleUrlChange = (event) => {
         setUrl(event.target.value);
     }
@@ -70,13 +74,37 @@ const SoundCloud = () => {
             notify('error', 'Đã có lỗi xảy ra!');
         })
     }
-
+    function LinearProgressWithLabel(props) {
+        if (props.value === 100) setTimeout(() => setLoading(0), 1000);
+        return (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ width: '100%', mr: 1 }}>
+                    <LinearProgress variant="determinate" {...props} />
+                </Box>
+                <Box sx={{ minWidth: 35 }}>
+                    <Typography variant="body2" color="text.secondary">{`${Math.round(
+                        props.value,
+                    )}%`}</Typography>
+                </Box>
+            </Box>
+        );
+    }
+    const handlePaste = () => {
+        navigator.clipboard.readText().then((text) => {
+            setUrl(text);
+        })
+    }
     const handleDownloadMusic = () => {
         notify('info', 'Đang chuẩn bị tải xuống...');
         axios({
             url: music.download_url,
             method: 'GET',
-            responseType: 'blob'
+            responseType: 'blob',
+            onDownloadProgress: (progressEvent) => {
+                const { loaded, total } = progressEvent;
+                const percent = Math.floor((loaded * 100) / total);
+                setLoading(percent);
+            }
         }).then((response) => {
             var url = window.URL.createObjectURL(new Blob([response.data]));
             var a = document.createElement('a');
@@ -109,10 +137,18 @@ const SoundCloud = () => {
                 />
                 <div className="row">
                     <div className="col-md-12">
-                        <TextField fullWidth id="outlined-basic" label="URL" variant="outlined" value={url} onChange={handleUrlChange} />
-                        <Button variant="primary" onClick={handleDownload} style={{
-                            margin: '1rem'
-                        }}>Download</Button>
+                        <TextField fullWidth id="outlined-basic" label="URL" variant="outlined" value={url} onChange={handleUrlChange} style={{
+                            margin: "10px"
+                        }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton style={{ color: '#000000' }} onClick={handlePaste}><ContentPasteGo /></IconButton>
+                                        <IconButton style={{ color: '#000000' }} onClick={handleDownload} ><Download /></IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
                     </div>
                 </div>
                 <div className="row">
@@ -140,11 +176,12 @@ const SoundCloud = () => {
                                 </Box>
                                 <CardMedia
                                     component="img"
-                                    sx={{ 
+                                    sx={{
                                         width: 151,
                                         borderRadius: '50%',
                                         height: 151,
-                                     }}
+                                        margin: 'auto',
+                                    }}
                                     image={music.thumbnail}
                                     alt="Live from space album cover"
                                 />
@@ -160,6 +197,15 @@ const SoundCloud = () => {
                             </div>
                         </div>
                     </div>
+                </div>
+                <div className='row'>
+                    {
+                        loading > 0 && (
+                            <div className="col-md-12">
+                                <LinearProgressWithLabel value={loading} />
+                            </div>
+                        )
+                    }
                 </div>
             </div>
         </>
